@@ -1,6 +1,11 @@
 Next v0.X
 -----------
 
+2018-08-14 v0.2
+-----------------
+
+- Fixed the last line of file being removed
+
 2018-08-14 v0.1
 -----------------
 
