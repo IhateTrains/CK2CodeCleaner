@@ -10,3 +10,14 @@
 	<fstream>
 	<cstdio>
 
+1534275691 source:c:\users\seweryn\documents\github\ck2codecleaner\main.cpp
+	<stdio.h>
+	<direct.h>
+	<unistd.h>
+	<iostream>
+	<windows.h>
+	<conio.h>
+	<iomanip>
+	<fstream>
+	<cstdio>
+

@@ -121,8 +121,8 @@ void CleanFile ()
                                     CrapCount++;
                                     SingleLine.erase(SingleLine.size()-1, 1);
                                 }
-
-                                if(!File.eof()) CleanedFile<<SingleLine<<endl; ///the eof check is to avoid adding empty line at the end of file
+                                if (!File.eof()) CleanedFile<<SingleLine<<endl; ///the eof check is to avoid adding empty line at the end of file
+                                else if (SingleLine!="") CleanedFile<<SingleLine<<endl;
                             }
                         }
                         while (CrapCount>0);
