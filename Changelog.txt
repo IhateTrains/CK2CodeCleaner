@@ -1,0 +1,10 @@
+Next v0.X
+-----------
+
+2018-08-14 v0.1
+-----------------
+
+- Inital release of CK2 Code Cleaner, featuring:
+	- Replacing four spaces with one TAB
+	- Replacing from 1 to 3 spaces + TAB with one TAB
+	- Removing empty spaces and TABs at the end of line

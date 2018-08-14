@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1534272403 source:e:\programowanie\ck2_code_cleaner\main.cpp
+	<stdio.h>
+	<direct.h>
+	<unistd.h>
+	<iostream>
+	<windows.h>
+	<conio.h>
+	<iomanip>
+	<fstream>
+	<cstdio>
+
