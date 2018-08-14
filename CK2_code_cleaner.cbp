@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-std=c++0x" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
