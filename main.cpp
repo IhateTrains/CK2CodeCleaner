@@ -240,7 +240,7 @@ void CleanFile ()
                                                     SingleLine = SingleLine.substr(0, i) + " " + SingleLine.substr(i, SingleLine.size()-i);
                                                     i++;
                                                 }
-                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ')
+                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ' && SingleLine[i+1] != '	')
                                                 {
                                                     SingleLine = SingleLine.substr(0, i+1) + " " + SingleLine.substr(i+1, SingleLine.size()-i-1);
                                                     i++;
@@ -253,7 +253,7 @@ void CleanFile ()
                                                     SingleLine = SingleLine.substr(0, i) + " " + SingleLine.substr(i, SingleLine.size()-i);
                                                     i++;
                                                 }
-                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ' && SingleLine[i+1] != '=')
+                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ' && SingleLine[i+1] != '	' && SingleLine[i+1] != '=')
                                                 {
                                                     SingleLine = SingleLine.substr(0, i+1) + " " + SingleLine.substr(i+1, SingleLine.size()-i-1);
                                                     i++;
@@ -266,7 +266,7 @@ void CleanFile ()
                                                     SingleLine = SingleLine.substr(0, i) + " " + SingleLine.substr(i, SingleLine.size()-i);
                                                     i++;
                                                 }
-                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ')
+                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ' && SingleLine[i+1] != '	')
                                                 {
                                                     SingleLine = SingleLine.substr(0, i+1) + " " + SingleLine.substr(i+1, SingleLine.size()-i-1);
                                                     i++;

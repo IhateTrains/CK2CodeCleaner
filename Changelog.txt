@@ -1,6 +1,11 @@
 Next v0.X
 -----------
 
+2018-08-15 v0.4.1
+-----------------
+
+- Fixed adding undesired inside syntax caused by TABS inside syntax
+
 2018-08-15 v0.4
 -----------------
 
