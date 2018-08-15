@@ -22,6 +22,8 @@ using namespace std;
 bool ExcludeCommentedLines = 1; /// exclude by default
 bool AddingSpacesBetweensyntax = 1;
 
+const string OperatorsAndBrackets = "><={}";
+
 string GetCurrentWorkingDir( void ) {
   char buff[FILENAME_MAX];
   GetCurrentDir( buff, FILENAME_MAX );
@@ -137,7 +139,7 @@ void CleanFile ()
     string SingleLine = "";
     int CrapCount=0;
     unsigned int CrapLocation1; /// for first function
-    int OperatorElementLocation = 0; /// for third funtion
+
     cout<<"Specify the file directory (example: C:\\MyMod\\events\\MyEvent.txt): ";
     getline(cin, FileDirectory);
     string CleanedFileDirectory = GetCurrentWorkingDir()+"\\FILEBEINGCLEANEDBYILIKETRAINS.txt"; /// lul name but at least almost ensures no such file exists already
@@ -208,57 +210,51 @@ void CleanFile ()
                                     }
 
                                     ///third funtion: adding spaces between syntax
-
-                                    ///399 ={
-                                    ///012345
-
-                                    if (AddingSpacesBetweensyntax == true)
+                                    for (unsigned int i=0;i<SingleLine.size();i++)
                                     {
-
-                                        if (SingleLine.find("=", OperatorElementLocation)!=string::npos)
+                                        if (OperatorsAndBrackets.find(SingleLine[i])!=string::npos)
                                         {
-                                             OperatorElementLocation = SingleLine.find("=");
-                                             if (OperatorElementLocation>0 && SingleLine[OperatorElementLocation-1] != ' ')
+                                            if (SingleLine[i] == '=')
+                                            {
+                                                if (i>0 && SingleLine[i-1] != ' ' && SingleLine[i-1] != '	')
                                                 {
-                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation) + " " + SingleLine.substr(OperatorElementLocation, SingleLine.size()-OperatorElementLocation);
-                                                    OperatorElementLocation++;
+                                                    SingleLine = SingleLine.substr(0, i) + " " + SingleLine.substr(i, SingleLine.size()-i);
+                                                    i++;
                                                 }
-                                             if (OperatorElementLocation<SingleLine.size()-1 && SingleLine[OperatorElementLocation+1] != ' ')
+                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ')
                                                 {
-                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation+1) + " " + SingleLine.substr(OperatorElementLocation+1, SingleLine.size()-OperatorElementLocation-1);
-                                                    OperatorElementLocation++;
+                                                    SingleLine = SingleLine.substr(0, i+1) + " " + SingleLine.substr(i+1, SingleLine.size()-i-1);
+                                                    i++;
                                                 }
-                                        }
-                                        if (SingleLine.find(">", OperatorElementLocation)!=string::npos)
-                                        {
-                                             OperatorElementLocation = SingleLine.find(">");
-                                             if (OperatorElementLocation>0 && SingleLine[OperatorElementLocation-1] != ' ')
+                                            }
+                                            if (SingleLine[i] == '>' || SingleLine[i] == '<')
+                                            {
+                                                if (i>0 && SingleLine[i-1] != ' ' && SingleLine[i-1] != '	')
                                                 {
-                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation) + " " + SingleLine.substr(OperatorElementLocation, SingleLine.size()-OperatorElementLocation);
-                                                    OperatorElementLocation++;
+                                                    SingleLine = SingleLine.substr(0, i) + " " + SingleLine.substr(i, SingleLine.size()-i);
+                                                    i++;
                                                 }
-                                            /// if (OperatorElementLocation<SingleLine.size()-1 && SingleLine[OperatorElementLocation+1] != ' ')
-                                               /// {
-                                               ///     SingleLine = SingleLine.substr(0, OperatorElementLocation+1) + " " + SingleLine.substr(OperatorElementLocation+1, SingleLine.size()-OperatorElementLocation-1);
-                                               ///     OperatorElementLocation++;
-                                              ///  }
-                                        }
-                                        if (SingleLine.find("<", OperatorElementLocation)!=string::npos)
-                                        {
-                                             OperatorElementLocation = SingleLine.find("<");
-                                             if (OperatorElementLocation>0 && SingleLine[OperatorElementLocation-1] != ' ')
+                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ' && SingleLine[i+1] != '=')
                                                 {
-                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation) + " " + SingleLine.substr(OperatorElementLocation, SingleLine.size()-OperatorElementLocation);
-                                                    OperatorElementLocation++;
+                                                    SingleLine = SingleLine.substr(0, i+1) + " " + SingleLine.substr(i+1, SingleLine.size()-i-1);
+                                                    i++;
                                                 }
-                                             ///if (OperatorElementLocation<SingleLine.size()-1 && SingleLine[OperatorElementLocation+1] != ' ')
-                                               /// {
-                                               ///     SingleLine = SingleLine.substr(0, OperatorElementLocation+1) + " " + SingleLine.substr(OperatorElementLocation+1, SingleLine.size()-OperatorElementLocation-1);
-                                               ///     OperatorElementLocation++;
-                                               /// }
+                                            }
+                                            if (SingleLine[i] == '{' || SingleLine[i] == '}')
+                                            {
+                                                if (i>0 && SingleLine[i-1] != ' ' && SingleLine[i-1] != '	')
+                                                {
+                                                    SingleLine = SingleLine.substr(0, i) + " " + SingleLine.substr(i, SingleLine.size()-i);
+                                                    i++;
+                                                }
+                                                if (i<SingleLine.size()-1 && SingleLine[i+1] != ' ')
+                                                {
+                                                    SingleLine = SingleLine.substr(0, i+1) + " " + SingleLine.substr(i+1, SingleLine.size()-i-1);
+                                                    i++;
+                                                }
+                                            }
                                         }
                                     }
-                                    OperatorElementLocation = 0;
                                 }
 
                                 CleanedFile<<SingleLine;
