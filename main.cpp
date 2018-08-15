@@ -76,9 +76,11 @@ void Settings (char WhatToDo)
     string ExpectedSyntax = "=";
     string SettingsFlagValue = "";
     string SingleLine = "";
-    string ConfigFileDirectory = GetCurrentWorkingDir()+"settings.txt";
-    string TempConfigFileDirectory = GetCurrentWorkingDir()+"settings_temp.txt";
+    string ConfigFileDirectory = GetCurrentWorkingDir()+"\\settings.txt";
+    string TempConfigFileDirectory = GetCurrentWorkingDir()+"\\settings_temp.txt";
     ConfigFile.open(ConfigFileDirectory.c_str());
+
+    cout<<ConfigFileDirectory<<endl;
 
     if (ConfigFile.good())
     {
@@ -119,7 +121,8 @@ void Settings (char WhatToDo)
     }
     else
     {
-        cout<<"Settings couldn't be loaded."<<endl<<endl;
+        cout<<"Settings file couldn't be loaded."<<endl;
+        cout<<"Don't worry, you can still run the program with default settings :)" <<endl<<endl;
     }
 }
 
@@ -246,9 +249,6 @@ int main()
 {
     char d;
 
-    cout << "=========================================" << endl;
-    cout << "      Crusader Kings 2 Code Cleaner" << endl;
-    cout << "=========================================" << endl<<endl;
     Settings(1); /// load settings
     GetCurrentWorkingDir();
     Menu();
@@ -261,8 +261,8 @@ int main()
 
         switch(d)
         {
-            ///case 'C': Settings(1); break; /// for now it's only done through the text file
-            case 'S': CleanFile(); break;
+            ///case 'S': Settings(1); break; /// for now it's only done through the text file
+            case 'C': CleanFile(); break;
             case 27: cout<<"Closing the program..."<<endl; break;
             default: cout<<"You pressed a wrong key"<<endl;
         }
