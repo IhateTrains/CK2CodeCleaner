@@ -3,3 +3,6 @@
 
 #Excludes the commented mod file lines from cleaning:
 ExcludeCommentedLines = 1
+
+#Adds spaces between syntax
+AddingSpacesBetweensyntax = 1

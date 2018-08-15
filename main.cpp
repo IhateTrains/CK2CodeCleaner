@@ -20,6 +20,7 @@ using namespace std;
 
 /// Settings
 bool ExcludeCommentedLines = 1; /// exclude by default
+bool AddingSpacesBetweensyntax = 1;
 
 string GetCurrentWorkingDir( void ) {
   char buff[FILENAME_MAX];
@@ -135,7 +136,8 @@ void CleanFile ()
     string FileDirectory;
     string SingleLine = "";
     int CrapCount=0;
-    unsigned int CrapLocation1;
+    unsigned int CrapLocation1; /// for first function
+    int OperatorElementLocation = 0; /// for third funtion
     cout<<"Specify the file directory (example: C:\\MyMod\\events\\MyEvent.txt): ";
     getline(cin, FileDirectory);
     string CleanedFileDirectory = GetCurrentWorkingDir()+"\\FILEBEINGCLEANEDBYILIKETRAINS.txt"; /// lul name but at least almost ensures no such file exists already
@@ -161,7 +163,7 @@ void CleanFile ()
                             CrapCount=0;
                             while(getline(File, SingleLine))
                             {
-                                if ((ExcludeCommentedLines = false) ||  (ExcludeCommentedLines = true && SingleLine.find("x") != 0 && SingleLine.find("/") != 0))
+                                if ((ExcludeCommentedLines == false) ||  (ExcludeCommentedLines == true && SingleLine.find("x") != 0 && SingleLine.find("/") != 0))
                                 {
                                     /// first function: replacing 4 spaces or from 1 to 3 spaces+TAB with 1 TAB (seriously, in many events in history there are tons of spaces instead of tabs...)
                                     while (SingleLine.find("    ") != string::npos)
@@ -192,6 +194,7 @@ void CleanFile ()
                                         SingleLine.erase(CrapLocation1, 2);
                                         SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
                                     }
+
                                     /// simple check to keep lines with only TABs where they are supposed to stay
                                     int PreviousLineTabCount = 0;
                                     while (SingleLine[PreviousLineTabCount]=='	') PreviousLineTabCount++; /// I like this line, sometimes I can be smart
@@ -203,6 +206,59 @@ void CleanFile ()
                                         CrapCount++;
                                         SingleLine.erase(SingleLine.size()-1, 1);
                                     }
+
+                                    ///third funtion: adding spaces between syntax
+
+                                    ///399 ={
+                                    ///012345
+
+                                    if (AddingSpacesBetweensyntax == true)
+                                    {
+
+                                        if (SingleLine.find("=", OperatorElementLocation)!=string::npos)
+                                        {
+                                             OperatorElementLocation = SingleLine.find("=");
+                                             if (OperatorElementLocation>0 && SingleLine[OperatorElementLocation-1] != ' ')
+                                                {
+                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation) + " " + SingleLine.substr(OperatorElementLocation, SingleLine.size()-OperatorElementLocation);
+                                                    OperatorElementLocation++;
+                                                }
+                                             if (OperatorElementLocation<SingleLine.size()-1 && SingleLine[OperatorElementLocation+1] != ' ')
+                                                {
+                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation+1) + " " + SingleLine.substr(OperatorElementLocation+1, SingleLine.size()-OperatorElementLocation-1);
+                                                    OperatorElementLocation++;
+                                                }
+                                        }
+                                        if (SingleLine.find(">", OperatorElementLocation)!=string::npos)
+                                        {
+                                             OperatorElementLocation = SingleLine.find(">");
+                                             if (OperatorElementLocation>0 && SingleLine[OperatorElementLocation-1] != ' ')
+                                                {
+                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation) + " " + SingleLine.substr(OperatorElementLocation, SingleLine.size()-OperatorElementLocation);
+                                                    OperatorElementLocation++;
+                                                }
+                                            /// if (OperatorElementLocation<SingleLine.size()-1 && SingleLine[OperatorElementLocation+1] != ' ')
+                                               /// {
+                                               ///     SingleLine = SingleLine.substr(0, OperatorElementLocation+1) + " " + SingleLine.substr(OperatorElementLocation+1, SingleLine.size()-OperatorElementLocation-1);
+                                               ///     OperatorElementLocation++;
+                                              ///  }
+                                        }
+                                        if (SingleLine.find("<", OperatorElementLocation)!=string::npos)
+                                        {
+                                             OperatorElementLocation = SingleLine.find("<");
+                                             if (OperatorElementLocation>0 && SingleLine[OperatorElementLocation-1] != ' ')
+                                                {
+                                                    SingleLine = SingleLine.substr(0, OperatorElementLocation) + " " + SingleLine.substr(OperatorElementLocation, SingleLine.size()-OperatorElementLocation);
+                                                    OperatorElementLocation++;
+                                                }
+                                             ///if (OperatorElementLocation<SingleLine.size()-1 && SingleLine[OperatorElementLocation+1] != ' ')
+                                               /// {
+                                               ///     SingleLine = SingleLine.substr(0, OperatorElementLocation+1) + " " + SingleLine.substr(OperatorElementLocation+1, SingleLine.size()-OperatorElementLocation-1);
+                                               ///     OperatorElementLocation++;
+                                               /// }
+                                        }
+                                    }
+                                    OperatorElementLocation = 0;
                                 }
 
                                 CleanedFile<<SingleLine;
