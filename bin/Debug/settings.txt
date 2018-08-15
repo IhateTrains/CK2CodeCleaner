@@ -1,0 +1,5 @@
+#This is the settings file for CK2 Code Cleaner
+#Use "#" for comments
+
+#Excludes the commented mod file lines from cleaning:
+ExcludeCommentedLines = 1

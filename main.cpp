@@ -18,11 +18,34 @@
 
 using namespace std;
 
+/// Settings
+bool ExcludeCommentedLines = 1; /// exclude by default
+
 string GetCurrentWorkingDir( void ) {
   char buff[FILENAME_MAX];
   GetCurrentDir( buff, FILENAME_MAX );
   std::string current_working_dir(buff);
   return current_working_dir;
+}
+
+bool ToBool (string value)
+{
+    if(value == "1") return true;
+    return false;
+}
+
+
+
+void Menu (void)
+{
+    cout << "=========================================" << endl;
+    cout << "      Crusader Kings 2 Code Cleaner" << endl;
+    cout << "=========================================" << endl;
+    cout<<"C - initiate new cleaning"<<endl;
+    ///cout<<"S - open settings"<<endl;
+    cout<<"ESC - exit"<<endl;
+    cout << "========================================="<<endl;
+    cout<<endl;
 }
 
 string GetLastErrorAsString()
@@ -44,23 +67,78 @@ string GetLastErrorAsString()
     return message;
 }
 
+void Settings (char WhatToDo)
+{
+    ifstream ConfigFile;
+    ofstream TempConfigFile;
+    string SingleSettingsFlag = "";
+    string Syntax = "";
+    string ExpectedSyntax = "=";
+    string SettingsFlagValue = "";
+    string SingleLine = "";
+    string ConfigFileDirectory = GetCurrentWorkingDir()+"settings.txt";
+    string TempConfigFileDirectory = GetCurrentWorkingDir()+"settings_temp.txt";
+    ConfigFile.open(ConfigFileDirectory.c_str());
+
+    if (ConfigFile.good())
+    {
+                switch(WhatToDo)
+                {
+                    case '1': /// load settings
+                    {
+                            while(!ConfigFile.eof())
+                            {
+                                ConfigFile>>SingleSettingsFlag;
+                                ConfigFile>>Syntax;
+
+                                if (SingleSettingsFlag.find("ExcludeCommentedLines") == 0 && Syntax == ExpectedSyntax) /// the flag is found at the beginning of the line and syntax is OK
+                                {
+                                    ConfigFile>>SettingsFlagValue;
+                                    if (SettingsFlagValue=="0" || SettingsFlagValue == "1") ExcludeCommentedLines = ToBool(SettingsFlagValue); /// save value
+                                }
+                                else getline(ConfigFile, SingleLine); /// no point in reading the rest of line if it's useless
+                            }
+
+                        cout<<"Settings loaded from "<<ConfigFileDirectory<<endl;
+
+                        ConfigFile.close();
+
+                        break;
+                    }
+                    case '2': /// save settings, not written and not needed ATM
+                    {
+                        ///TempConfigFile.open(TempConfigFileDirectory.c_str());
+
+                        ConfigFile.close();
+                        ///TempConfigFile.close();
+                        ///remove( CleanedFileDirectory.c_str() ); /// removes the temporary file
+
+                        break;
+                    }
+                }
+    }
+    else
+    {
+        cout<<"Settings couldn't be loaded."<<endl<<endl;
+    }
+}
+
 void CleanFile ()
 {
     char WhatToDo;
     ifstream File;
     ofstream CleanedFile;
-    string ModWorkingDirectory;
+    string ModWorkingDirectory; /// unused ATM
     string FileDirectory;
     string SingleLine = "";
     int CrapCount=0;
     unsigned int CrapLocation1;
     cout<<"Specify the file directory (example: C:\\MyMod\\events\\MyEvent.txt): ";
     getline(cin, FileDirectory);
-    string CleanedFileDirectory = GetCurrentWorkingDir()+"\\FILEBEINGCLEANEDBYILIKETRAINS.txt";
+    string CleanedFileDirectory = GetCurrentWorkingDir()+"\\FILEBEINGCLEANEDBYILIKETRAINS.txt"; /// lul name but at least almost ensures no such file exists already
     File.open(FileDirectory.c_str());
     CleanedFile.open(CleanedFileDirectory.c_str());
 
-    cout<<CleanedFileDirectory<<endl;
     if (File.good())
     {
         cout<<"File opened successfully."<<endl<<endl<<"If you want to continue cleaning, press 1. If you want to cancel cleaning, press 2."<<endl;
@@ -81,46 +159,50 @@ void CleanFile ()
                             while(!File.eof())
                             {
                                 getline(File, SingleLine);
-                                /// first function: replacing 4 spaces or from 1 to 3 spaces+TAB with 1 TAB (seriously, in many events in history there are tons of spaces instead of tabs...)
-                                while (SingleLine.find("    ") != string::npos)
+                                if (ExcludeCommentedLines && (SingleLine.find("x") == 0 || SingleLine.find("/") == 0))
                                 {
-                                    CrapCount++;
-                                    CrapLocation1 = SingleLine.find("    ");
-                                    SingleLine.erase(CrapLocation1, 4);
-                                    SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
+                                    /// first function: replacing 4 spaces or from 1 to 3 spaces+TAB with 1 TAB (seriously, in many events in history there are tons of spaces instead of tabs...)
+                                    while (SingleLine.find("    ") != string::npos)
+                                    {
+                                        CrapCount++;
+                                        CrapLocation1 = SingleLine.find("    ");
+                                        SingleLine.erase(CrapLocation1, 4);
+                                        SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
+                                    }
+                                    while (SingleLine.find("   	") != string::npos)
+                                    {
+                                        CrapCount++;
+                                        CrapLocation1 = SingleLine.find("   	");
+                                        SingleLine.erase(CrapLocation1, 4);
+                                        SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
+                                    }
+                                    while (SingleLine.find("  	") != string::npos)
+                                    {
+                                        CrapCount++;
+                                        CrapLocation1 = SingleLine.find("  	");
+                                        SingleLine.erase(CrapLocation1, 3);
+                                        SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
+                                    }
+                                    while (SingleLine.find(" 	") != string::npos)
+                                    {
+                                        CrapCount++;
+                                        CrapLocation1 = SingleLine.find(" 	");
+                                        SingleLine.erase(CrapLocation1, 2);
+                                        SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
+                                    }
+                                    /// simple check to keep lines with only TABs where they are supposed to stay
+                                    int PreviousLineTabCount = 0;
+                                    while (SingleLine[PreviousLineTabCount]=='	') PreviousLineTabCount++; /// I like this line, sometimes I can be smart
+                                    /// second function: removing empty spaces and TABs at the end of line
+                                    string ExpectedStringOfTabs = "";
+                                    for (int i=0;i<PreviousLineTabCount;i++) ExpectedStringOfTabs=ExpectedStringOfTabs+'	';
+                                    while ((SingleLine[SingleLine.size()-1] == ' '  || SingleLine[SingleLine.size()-1] == '	') && SingleLine != ExpectedStringOfTabs)
+                                    {
+                                        CrapCount++;
+                                        SingleLine.erase(SingleLine.size()-1, 1);
+                                    }
                                 }
-                                while (SingleLine.find("   	") != string::npos)
-                                {
-                                    CrapCount++;
-                                    CrapLocation1 = SingleLine.find("   	");
-                                    SingleLine.erase(CrapLocation1, 4);
-                                    SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
-                                }
-                                while (SingleLine.find("  	") != string::npos)
-                                {
-                                    CrapCount++;
-                                    CrapLocation1 = SingleLine.find("  	");
-                                    SingleLine.erase(CrapLocation1, 3);
-                                    SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
-                                }
-                                while (SingleLine.find(" 	") != string::npos)
-                                {
-                                    CrapCount++;
-                                    CrapLocation1 = SingleLine.find(" 	");
-                                    SingleLine.erase(CrapLocation1, 2);
-                                    SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
-                                }
-                                /// simple check to keep lines with only TABs where they are supposed to stay
-                                int PreviousLineTabCount = 0;
-                                while (SingleLine[PreviousLineTabCount]=='	') PreviousLineTabCount++; /// I like this line, sometimes I can be smart
-                                /// second function: removing empty spaces and TABs at the end of line
-                                string ExpectedStringOfTabs = "";
-                                for (int i=0;i<PreviousLineTabCount;i++) ExpectedStringOfTabs=ExpectedStringOfTabs+'	';
-                                while ((SingleLine[SingleLine.size()-1] == ' '  || SingleLine[SingleLine.size()-1] == '	') && SingleLine != ExpectedStringOfTabs)
-                                {
-                                    CrapCount++;
-                                    SingleLine.erase(SingleLine.size()-1, 1);
-                                }
+
                                 if (!File.eof()) CleanedFile<<SingleLine<<endl; ///the eof check is to avoid adding empty line at the end of file
                                 else if (SingleLine!="") CleanedFile<<SingleLine<<endl;
                             }
@@ -142,7 +224,7 @@ void CleanFile ()
         File.close();
         CleanedFile.close();
 
-        remove( FileDirectory.c_str() ); /// removed the old version of the file
+        remove( FileDirectory.c_str() ); /// removes the old version of the file
 
         if (!MoveFile(CleanedFileDirectory.c_str(), FileDirectory.c_str())) /// move the cleaned version in place of the old one
         {
@@ -162,10 +244,30 @@ void CleanFile ()
 
 int main()
 {
-    cout << "===============================" << endl;
-    cout << " Crusader Kings 2 Code Cleaner" << endl;
-    cout << "===============================" << endl<<endl;
+    char d;
+
+    cout << "=========================================" << endl;
+    cout << "      Crusader Kings 2 Code Cleaner" << endl;
+    cout << "=========================================" << endl<<endl;
+    Settings(1); /// load settings
     GetCurrentWorkingDir();
-    CleanFile();
-    return main();
+    Menu();
+
+    do
+    {
+        cin.clear();
+        cin.sync();
+        d = toupper(getch());
+
+        switch(d)
+        {
+            ///case 'C': Settings(1); break; /// for now it's only done through the text file
+            case 'S': CleanFile(); break;
+            case 27: cout<<"Closing the program..."<<endl; break;
+            default: cout<<"You pressed a wrong key"<<endl;
+        }
+    }
+    while (d!=char(27));
+
+    return 0;
 }
