@@ -1,6 +1,15 @@
 Next v0.X
 -----------
 
+2018-08-15 v0.4
+-----------------
+
+- Tweaks to excluding the comment from cleaning:
+	- The Cleaner now recongizes comments that don't start at the beginning of the line
+- New cleaning funtion:
+	- Adding spaces between syntax elements for better readability (enabled by default, can be changed in settings.txt)
+- Fixed AddingSpacesBetweensyntax value not being loaded from settings.txt
+
 2018-08-15 v0.3
 -----------------
 
