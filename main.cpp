@@ -159,10 +159,9 @@ void CleanFile ()
                         do
                         {
                             CrapCount=0;
-                            while(!File.eof())
+                            while(getline(File, SingleLine))
                             {
-                                getline(File, SingleLine);
-                                if (ExcludeCommentedLines && (SingleLine.find("x") == 0 || SingleLine.find("/") == 0))
+                                if ((ExcludeCommentedLines = false) ||  (ExcludeCommentedLines = true && SingleLine.find("x") != 0 && SingleLine.find("/") != 0))
                                 {
                                     /// first function: replacing 4 spaces or from 1 to 3 spaces+TAB with 1 TAB (seriously, in many events in history there are tons of spaces instead of tabs...)
                                     while (SingleLine.find("    ") != string::npos)
@@ -206,8 +205,9 @@ void CleanFile ()
                                     }
                                 }
 
-                                if (!File.eof()) CleanedFile<<SingleLine<<endl; ///the eof check is to avoid adding empty line at the end of file
-                                else if (SingleLine!="") CleanedFile<<SingleLine<<endl;
+                                CleanedFile<<SingleLine;
+                                if (!File.eof()) CleanedFile<<endl;
+
                             }
                         }
                         while (CrapCount>0);
@@ -243,6 +243,7 @@ void CleanFile ()
     {
         cout<<"Specified file couldn't be opened."<<endl<<endl;
     }
+    Menu();
 }
 
 int main()
