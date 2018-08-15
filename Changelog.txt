@@ -1,6 +1,12 @@
 Next v0.X
 -----------
 
+2018-08-15 v0.3
+-----------------
+
+- Made the program exclude commented lines from cleaning (this can be changed in settings.txt)
+- Fixed adding a blank line at the end of cleaned files
+
 2018-08-14 v0.2
 -----------------
 
