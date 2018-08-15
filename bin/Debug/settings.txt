@@ -1,8 +1,10 @@
 #This is the settings file for CK2 Code Cleaner
-#Use "#" for comments
+#Use "#" for comments (only work as comments if they are the first sign of the line)
 
 #Excludes the commented mod file lines from cleaning:
 ExcludeCommentedLines = 1
+#Customisable string of comment characters (e.g. ExcludeCommentedLines = #/%@) NOTE: only one-sign characters are supported
+CommentSignsString = #
 
 #Adds spaces between syntax
 AddingSpacesBetweensyntax = 1

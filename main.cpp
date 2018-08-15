@@ -21,6 +21,7 @@ using namespace std;
 /// Settings
 bool ExcludeCommentedLines = 1; /// exclude by default
 bool AddingSpacesBetweensyntax = 1;
+string CommentSignsString = "#"; /// NOTE: only one-sign characters are supported
 
 const string OperatorsAndBrackets = "><={}";
 
@@ -70,6 +71,15 @@ string GetLastErrorAsString()
     return message;
 }
 
+int FirstCommentSignLocation (string SingleLine)
+{
+    /// returns -1 if comment sign not found
+    int location = -1;
+    for (unsigned int i=0; i<SingleLine.size(); i++)
+        if (CommentSignsString.find(SingleLine[i]) != string::npos) location = i;
+    return location;
+}
+
 void Settings (char WhatToDo)
 {
     ifstream ConfigFile;
@@ -100,6 +110,16 @@ void Settings (char WhatToDo)
                                 {
                                     ConfigFile>>SettingsFlagValue;
                                     if (SettingsFlagValue=="0" || SettingsFlagValue == "1") ExcludeCommentedLines = ToBool(SettingsFlagValue); /// save value
+                                }
+                                else if (SingleSettingsFlag.find("AddingSpacesBetweensyntax") == 0 && Syntax == ExpectedSyntax)
+                                {
+                                    ConfigFile>>SettingsFlagValue;
+                                    if (SettingsFlagValue=="0" || SettingsFlagValue == "1") AddingSpacesBetweensyntax = ToBool(SettingsFlagValue); /// save value
+                                }
+                                else if (SingleSettingsFlag.find("CommentSignsString") == 0 && Syntax == ExpectedSyntax)
+                                {
+                                    ConfigFile>>SettingsFlagValue;
+                                    CommentSignsString = SettingsFlagValue; /// save string
                                 }
                                 else getline(ConfigFile, SingleLine); /// no point in reading the rest of line if it's useless
                             }
@@ -142,7 +162,7 @@ void CleanFile ()
 
     cout<<"Specify the file directory (example: C:\\MyMod\\events\\MyEvent.txt): ";
     getline(cin, FileDirectory);
-    string CleanedFileDirectory = GetCurrentWorkingDir()+"\\FILEBEINGCLEANEDBYILIKETRAINS.txt"; /// lul name but at least almost ensures no such file exists already
+    string CleanedFileDirectory = GetCurrentWorkingDir()+"\\FILEBEINGCLEANEDBYILIKETRAINS.txt"; /// lul name but at least almost ensures no such file exists already (yeah too lazy to add proper safety checks...)
     File.open(FileDirectory.c_str());
     CleanedFile.open(CleanedFileDirectory.c_str());
 
@@ -165,31 +185,29 @@ void CleanFile ()
                             CrapCount=0;
                             while(getline(File, SingleLine))
                             {
-                                if ((ExcludeCommentedLines == false) ||  (ExcludeCommentedLines == true && SingleLine.find("x") != 0 && SingleLine.find("/") != 0))
-                                {
                                     /// first function: replacing 4 spaces or from 1 to 3 spaces+TAB with 1 TAB (seriously, in many events in history there are tons of spaces instead of tabs...)
-                                    while (SingleLine.find("    ") != string::npos)
+                                    while (SingleLine.find("    ") != string::npos && (SingleLine.find("    ")<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false)) /// here comparison between unsigned int and int is actually helpful (negative int is greater than unsigned int, so -1 is treated like a great number)
                                     {
                                         CrapCount++;
                                         CrapLocation1 = SingleLine.find("    ");
                                         SingleLine.erase(CrapLocation1, 4);
                                         SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
                                     }
-                                    while (SingleLine.find("   	") != string::npos)
+                                    while (SingleLine.find("   	") != string::npos && (SingleLine.find("   	")<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false))
                                     {
                                         CrapCount++;
                                         CrapLocation1 = SingleLine.find("   	");
                                         SingleLine.erase(CrapLocation1, 4);
                                         SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
                                     }
-                                    while (SingleLine.find("  	") != string::npos)
+                                    while (SingleLine.find("  	") != string::npos && (SingleLine.find("  	")<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false))
                                     {
                                         CrapCount++;
                                         CrapLocation1 = SingleLine.find("  	");
                                         SingleLine.erase(CrapLocation1, 3);
                                         SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
                                     }
-                                    while (SingleLine.find(" 	") != string::npos)
+                                    while (SingleLine.find(" 	") != string::npos && (SingleLine.find(" 	")<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false))
                                     {
                                         CrapCount++;
                                         CrapLocation1 = SingleLine.find(" 	");
@@ -201,6 +219,7 @@ void CleanFile ()
                                     int PreviousLineTabCount = 0;
                                     while (SingleLine[PreviousLineTabCount]=='	') PreviousLineTabCount++; /// I like this line, sometimes I can be smart
                                     /// second function: removing empty spaces and TABs at the end of line
+                                    /// this funtion is not excluded from cleaning
                                     string ExpectedStringOfTabs = "";
                                     for (int i=0;i<PreviousLineTabCount;i++) ExpectedStringOfTabs=ExpectedStringOfTabs+'	';
                                     while ((SingleLine[SingleLine.size()-1] == ' '  || SingleLine[SingleLine.size()-1] == '	') && SingleLine != ExpectedStringOfTabs)
@@ -212,7 +231,7 @@ void CleanFile ()
                                     ///third funtion: adding spaces between syntax
                                     for (unsigned int i=0;i<SingleLine.size();i++)
                                     {
-                                        if (OperatorsAndBrackets.find(SingleLine[i])!=string::npos)
+                                        if (OperatorsAndBrackets.find(SingleLine[i])!=string::npos&& (i<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false))
                                         {
                                             if (SingleLine[i] == '=')
                                             {
@@ -255,7 +274,6 @@ void CleanFile ()
                                             }
                                         }
                                     }
-                                }
 
                                 CleanedFile<<SingleLine;
                                 if (!File.eof()) CleanedFile<<endl;
