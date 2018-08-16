@@ -228,7 +228,7 @@ void CleanFile ()
                                         SingleLine.erase(SingleLine.size()-1, 1);
                                     }
 
-                                    ///third funtion: adding spaces between syntax
+                                    /// third funtion: adding spaces between syntax
                                     for (unsigned int i=0;i<SingleLine.size();i++)
                                     {
                                         if (OperatorsAndBrackets.find(SingleLine[i])!=string::npos&& (i<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false))
@@ -273,6 +273,19 @@ void CleanFile ()
                                                 }
                                             }
                                         }
+                                    }
+                                    /// fourth function: replacing up to 3 spaces with 3 space (happens after first function and thus doesn't conflict with it)
+                                    while (SingleLine.find("  ") != string::npos && (SingleLine.find("  ")<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false))
+                                    {
+                                        CrapCount++;
+                                        CrapLocation1 = SingleLine.find("  ");
+                                        SingleLine.erase(CrapLocation1, 1);
+                                    }
+                                    while (SingleLine.find("   ") != string::npos && (SingleLine.find("   ")<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false))
+                                    {
+                                        CrapCount++;
+                                        CrapLocation1 = SingleLine.find("   ");
+                                        SingleLine.erase(CrapLocation1, 2);
                                     }
 
                                 CleanedFile<<SingleLine;
