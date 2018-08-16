@@ -1,6 +1,12 @@
 Next v0.X
 -----------
 
+2018-08-16 v0.5
+-----------------
+
+- New cleaning funtion:
+	- Replacing two or three spaces between syntax elements with one space
+
 2018-08-15 v0.4.1
 -----------------
 
