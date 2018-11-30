@@ -38,8 +38,6 @@ bool ToBool (string value)
     return false;
 }
 
-
-
 void Menu (void)
 {
     cout << "=========================================" << endl;

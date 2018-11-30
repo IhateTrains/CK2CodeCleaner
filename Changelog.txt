@@ -1,5 +1,5 @@
-Next v0.X
------------
+2018-11-30 v0.5.1
+-----------------
 
 - Fixed adding spaces inside "{}"
 
