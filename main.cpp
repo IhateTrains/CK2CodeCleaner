@@ -71,7 +71,7 @@ string GetLastErrorAsString()
     return message;
 }
 
-int FirstCommentSignLocation (string SingleLine)
+unsigned int FirstCommentSignLocation (string SingleLine)
 {
     /// returns -1 if comment sign not found
     int location = -1;
@@ -185,7 +185,7 @@ void CleanFile ()
                             CrapCount=0;
                             while(getline(File, SingleLine))
                             {
-                                    /// first function: replacing 4 spaces or from 1 to 3 spaces+TAB with 1 TAB (seriously, in many events in history there are tons of spaces instead of tabs...)
+                                    /// first function: replacing 4 spaces or from 1 to 3 spaces+TAB with 1 TAB (seriously, in many events and history files there are tons of spaces instead of tabs...)
                                     while (SingleLine.find("    ") != string::npos && (SingleLine.find("    ")<FirstCommentSignLocation(SingleLine) || ExcludeCommentedLines == false)) /// here comparison between unsigned int and int is actually helpful (negative int is greater than unsigned int, so -1 is treated like a great number)
                                     {
                                         CrapCount++;
