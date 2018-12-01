@@ -157,7 +157,7 @@ void CleanFile ()
     string SingleLine = "";
     int CrapCount=0;
     unsigned int CrapLocation1; /// for first function
-
+    int PreviousLineTabCount = 0;
     cout<<"Specify the file directory (example: C:\\MyMod\\events\\MyEvent.txt): ";
     getline(cin, FileDirectory);
     string CleanedFileDirectory = GetCurrentWorkingDir()+"\\FILEBEINGCLEANEDBYILIKETRAINS.txt"; /// lul name but at least almost ensures no such file exists already (yeah too lazy to add proper safety checks...)
@@ -213,18 +213,16 @@ void CleanFile ()
                                         SingleLine = SingleLine.substr(0,CrapLocation1) + "	" + SingleLine.substr(CrapLocation1,SingleLine.length()-CrapLocation1);
                                     }
 
-                                    /// simple check to keep lines with only TABs where they are supposed to stay
-                                    int PreviousLineTabCount = 0;
-                                    while (SingleLine[PreviousLineTabCount]=='	') PreviousLineTabCount++; /// I like this line, sometimes I can be smart
                                     /// second function: removing empty spaces and TABs at the end of line
-                                    /// this funtion is not excluded from cleaning
+                                    /// this funtion shouldn't clean the comments
                                     string ExpectedStringOfTabs = "";
                                     for (int i=0;i<PreviousLineTabCount;i++) ExpectedStringOfTabs=ExpectedStringOfTabs+'	';
-                                    while ((SingleLine[SingleLine.size()-1] == ' '  || SingleLine[SingleLine.size()-1] == '	') && SingleLine != ExpectedStringOfTabs)
+                                    while ((SingleLine[SingleLine.size()-1] == ' '  || SingleLine[SingleLine.size()-1] == '	') && SingleLine.size()-1<FirstCommentSignLocation(SingleLine) && SingleLine != ExpectedStringOfTabs)
                                     {
                                         CrapCount++;
                                         SingleLine.erase(SingleLine.size()-1, 1);
                                     }
+                                    if (SingleLine=="" && SingleLine!=ExpectedStringOfTabs) SingleLine=ExpectedStringOfTabs; /// to properly clean lines that only have spaces and should have at least one TAB instead
 
                                     /// third funtion: adding spaces between syntax
                                     for (unsigned int i=0;i<SingleLine.size();i++)
@@ -285,6 +283,10 @@ void CleanFile ()
                                         CrapLocation1 = SingleLine.find("   ");
                                         SingleLine.erase(CrapLocation1, 2);
                                     }
+
+                                /// for second function: simple check to keep lines with only TABs where they are supposed to stay
+                                PreviousLineTabCount = 0;
+                                while (SingleLine[PreviousLineTabCount]=='	') PreviousLineTabCount++; /// I like this line, sometimes I can be smart
 
                                 CleanedFile<<SingleLine;
                                 if (!File.eof()) CleanedFile<<endl;
